@@ -1,0 +1,73 @@
+version: '3.8'
+
+name: neo4j-stack
+networks:
+  my_custom_network:
+    driver: bridge
+
+services:
+  prime_kg:
+    image: neo4j:2025.01
+    container_name: neo4j-prime-kg
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/prime123
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    volumes:
+      - neo4j_data_prime_kg:/data
+      - neo4j_logs_prime_kg:/logs
+      - neo4j_import_prime_kg:/var/lib/neo4j/import
+      - neo4j_plugins_prime_kg:/plugins
+      - ./kg.csv:/var/lib/neo4j/import/kg.csv
+      - ./kg_sample_2100000.csv:/var/lib/neo4j/import/kg_sample_2100000.csv
+    networks:
+      - my_custom_network
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:7474/"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+
+  mimic_kg:  # Add your second service here
+    image: neo4j:2025.01  # Replace with your desired image
+    container_name: neo4j-mimic-kg
+    ports:
+      - "7000:7474"  # Replace with your desired port mapping
+      - "7001:7687"  # Replace with your desired port mapping
+    environment:
+      - NEO4J_AUTH=neo4j/mimic123
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    volumes:
+      - neo4j_data_mimic_kg:/data
+      - neo4j_logs_mimic_kg:/logs
+      - neo4j_import_mimic_kg:/var/lib/neo4j/import
+      - neo4j_plugins_mimic_kg:/plugins
+    networks:
+      - my_custom_network
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:7474/"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+
+volumes:
+  neo4j_data_prime_kg:
+  neo4j_logs_prime_kg:
+  neo4j_import_prime_kg:
+  neo4j_plugins_prime_kg:
+  neo4j_data_mimic_kg:  # Separate volume for the second container
+  neo4j_logs_mimic_kg:  # Separate volume for logs of the second container
+  neo4j_import_mimic_kg:  # Separate volume for the second container
+  neo4j_plugins_mimic_kg:  # Separate volume for the second container

@@ -1,0 +1,45 @@
+version: '3.8'
+name: n8n-stack
+volumes:
+  db_storage:
+  n8n_storage:
+
+services:
+  postgres_n8n:
+    image: postgres:latest
+    # restart: always
+    command: -p 5434
+    environment:
+      - POSTGRES_USER=postgres_n8n
+      - POSTGRES_PASSWORD=postgres_n8n
+      - POSTGRES_DB=postgres_n8n
+    ports:
+      - 5434:5434
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_n8n -d postgres_n8n -p 5434"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    # restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres_n8n
+      - DB_POSTGRESDB_PORT=5434
+      - DB_POSTGRESDB_DATABASE=postgres_n8n
+      - DB_POSTGRESDB_USER=postgres_n8n
+      - DB_POSTGRESDB_PASSWORD=postgres_n8n
+    ports:
+      - 5678:5678
+    links:
+      - postgres_n8n
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    depends_on:
+      postgres_n8n:
+        condition: service_healthy

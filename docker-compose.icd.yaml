@@ -1,0 +1,14 @@
+version: '3.8'
+
+name: icd11
+services:
+  icd11-api:
+    image: whoicd/icd-api:latest
+    ports:
+      - "801:80"  # Maps host port 801 to container port 801
+    environment:
+      - acceptLicense=true
+      - saveAnalytics=true
+      - PORT=801  # Sets the internal port to 801
+    restart: unless-stopped
+    container_name: icd11-api

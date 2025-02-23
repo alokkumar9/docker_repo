@@ -1,13 +1,12 @@
-version: '3.8'
 name: n8n-stack
 volumes:
-  db_storage:
+  postgres_n8n_data:
   n8n_storage:
 
 services:
   postgres_n8n:
     image: postgres:latest
-    # restart: always
+    # restart: always  # Uncomment if you want automatic restarts
     command: -p 5434
     environment:
       - POSTGRES_USER=postgres_n8n
@@ -16,7 +15,7 @@ services:
     ports:
       - 5434:5434
     volumes:
-      - db_storage:/var/lib/postgresql/data
+      - postgres_n8n_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres_n8n -d postgres_n8n -p 5434"]
       interval: 5s
@@ -26,7 +25,7 @@ services:
 
   n8n:
     image: docker.n8n.io/n8nio/n8n
-    # restart: always
+    # restart: always  # Uncomment if you want automatic restarts
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres_n8n
@@ -36,8 +35,6 @@ services:
       - DB_POSTGRESDB_PASSWORD=postgres_n8n
     ports:
       - 5678:5678
-    links:
-      - postgres_n8n
     volumes:
       - n8n_storage:/home/node/.n8n
     depends_on:

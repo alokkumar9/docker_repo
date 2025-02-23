@@ -1,5 +1,3 @@
-version: '3.8'
-
 name: icd11
 services:
   icd11-api:
@@ -10,5 +8,5 @@ services:
       - acceptLicense=true
       - saveAnalytics=true
       - PORT=801  # Sets the internal port to 801
-    restart: unless-stopped
+    # restart: unless-stopped # Uncomment if you want automatic restarts
     container_name: icd11-api

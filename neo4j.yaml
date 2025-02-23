@@ -1,5 +1,3 @@
-version: '3.8'
-
 name: neo4j-stack
 networks:
   my_custom_network:
@@ -25,8 +23,8 @@ services:
       - neo4j_logs_prime_kg:/logs
       - neo4j_import_prime_kg:/var/lib/neo4j/import
       - neo4j_plugins_prime_kg:/plugins
-      - ./kg.csv:/var/lib/neo4j/import/kg.csv
-      - ./kg_sample_2100000.csv:/var/lib/neo4j/import/kg_sample_2100000.csv
+      # - ./kg.csv:/var/lib/neo4j/import/kg.csv
+      # - ./kg_sample_2100000.csv:/var/lib/neo4j/import/kg_sample_2100000.csv
     networks:
       - my_custom_network
     # healthcheck:

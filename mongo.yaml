@@ -13,6 +13,7 @@ services:
       - mongo_network
     ports:
       - "27017:27017"
+    # restart: always  # Uncomment if you want automatic restarts
 
 networks:
   mongo_network:
